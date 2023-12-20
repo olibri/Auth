@@ -1,47 +1,51 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Sprint16.Data;
 using Sprint16.Models;
 using Sprint16.Service;
 using Sprint16.ViewModels;
 
 namespace Sprint16.Controllers
 {
+    [Authorize(Roles ="admin")]
     public class UserController : Controller
     {
-        private IUserService _userService;
-        public UserController(IUserService userService)
+        ShoppingContext _db;
+        public UserController(ShoppingContext shoppingContext)
         {
-            _userService = userService;
+            _db = shoppingContext;
         }
-
-        public IActionResult AssignCategory()
+        public async Task<IActionResult> Index()
         {
-            var users = _userService.GetAllUsers();
+            var users = await _db.Users.Include(u => u.BuyerType).ToListAsync();
+            var buyerTypes = await _db.BuyerTypes.ToListAsync();
 
-            var model = new UserCategoryViewModel
+            var viewModel = new UserCategoryViewModel
             {
-
-                Users = users.Select(u => new SelectListItem
+                Users = users,
+                BuyerTypes = buyerTypes.Select(bt => new SelectListItem
                 {
-                    Value = u.Id.ToString(),
-                    Text =  u.UserName
-                }),
-                Categories = Enum.GetValues(typeof(BuyerCategory))
-                .Cast<BuyerCategory>()
-                .Select(b => new SelectListItem { Value = b.ToString(), Text = b.ToString() })
-
+                    Value = bt.Id.ToString(),
+                    Text = bt.BuyerName
+                })
             };
-            return View(model);
+            return View(viewModel);
         }
         [HttpPost]
-        public IActionResult AssignCategory(UserCategoryViewModel model) {
-            if(ModelState.IsValid)
+        public async Task<IActionResult> Index(int userId, int SelectedBuyerTypeId)
+        {
+            var user = await _db.Users.FindAsync(userId);
+            if (user != null)
             {
-                _userService.UpdateUserCategory(model.UserId, model.SelectedCategory);
-                return RedirectToAction("Index", "Home");
+                user.BuyerTypeId = SelectedBuyerTypeId;
+                _db.Update(user);
+                await _db.SaveChangesAsync();
             }
-            
-            return View(model);
+
+            return RedirectToAction("Index", "Home");
         }
+    
     }
 }

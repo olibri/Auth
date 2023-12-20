@@ -33,6 +33,7 @@ namespace Sprint16.Controllers
             {
                 User? user = await db.Users
                     .Include(u=>u.Role)
+                    .Include(u=>u.BuyerType)
                     .FirstOrDefaultAsync(u=> u.Email == loginViewModel.Email /*&& u.Password == loginViewModel.Password*/);
 
                 if (user != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, user.Password))
@@ -56,18 +57,20 @@ namespace Sprint16.Controllers
         {
             if(ModelState.IsValid)
             {
-                User user = await db.Users.FirstOrDefaultAsync(us=> us.Email == registerViewModel.Email);
+                User? user = await db.Users.FirstOrDefaultAsync(us=> us.Email == registerViewModel.Email);
                 if (user == null)
                 {
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerViewModel.Password);
 
                     user = new User { Email = registerViewModel.Email , Password = hashedPassword};
-                    Role userRole = await db.Roles.FirstOrDefaultAsync(r => r.Name == "user");
-
                     
-                    if (userRole != null)
+                    Role? userRole = await db.Roles.FirstOrDefaultAsync(r => r.Name == "user");
+                    BuyerType? buyerType = await db.BuyerTypes.FirstOrDefaultAsync(b => b.BuyerName == "none");
+                    
+                    if (userRole != null && buyerType != null)
                     {
                         user.Role = userRole;
+                        user.BuyerType = buyerType;
                     }
                     db.Users.Add(user);                          
 
@@ -87,8 +90,8 @@ namespace Sprint16.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name),
-                new Claim("buyerCategory", user._BuyerType.Category.ToString())
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name),
+                new Claim("BuyerType", user.BuyerType?.ToString())
             };
             ClaimsIdentity Id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);

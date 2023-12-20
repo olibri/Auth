@@ -1,15 +1,15 @@
 ﻿namespace Sprint16.Models
 {
-    public enum BuyerCategory
-    {
-        None,
-        Regular,
-        Golden,
-        Wholesale
-    }
+   
     public class BuyerType
     {
         public int Id { get; set; }
-        public BuyerCategory Category { get; set; }
+        public string BuyerName { get; set; }
+        public List<User> Users { get; set; }   
+
+        public BuyerType() 
+        {
+            Users = new List<User>();
+        }  
     }
 }

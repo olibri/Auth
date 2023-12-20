@@ -1,0 +1,37 @@
+﻿@model Sprint16.ViewModels.UserCategoryViewModel
+
+<h2>User List</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <input type="text" name="searchString" placeholder="Search by Last Name or First Name" />
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Buyer Type</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.BuyerType.BuyerName.</td>
+                
+                <td>
+                    <form asp-action="Index" method="post">
+                        <input type="hidden" name="UserId" value="@user.Id" />
+                        @Html.DropDownList("SelectedBuyerTypeId", Model.BuyerTypes, "Choose Buyer Type")
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

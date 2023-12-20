@@ -12,8 +12,8 @@ using Sprint16.Data;
 namespace Sprint16.Migrations
 {
     [DbContext(typeof(ShoppingContext))]
-    [Migration("20231219142741_MyMigr9")]
-    partial class MyMigr9
+    [Migration("20231220120855_myMigr3")]
+    partial class myMigr3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,8 +33,9 @@ namespace Sprint16.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -205,7 +206,7 @@ namespace Sprint16.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BuyerTypeId")
+                    b.Property<int?>("BuyerTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -268,19 +269,22 @@ namespace Sprint16.Migrations
 
             modelBuilder.Entity("Sprint16.Models.User", b =>
                 {
-                    b.HasOne("Sprint16.Models.BuyerType", "_BuyerType")
-                        .WithMany()
-                        .HasForeignKey("BuyerTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Sprint16.Models.BuyerType", "BuyerType")
+                        .WithMany("Users")
+                        .HasForeignKey("BuyerTypeId");
 
                     b.HasOne("Sprint16.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
 
-                    b.Navigation("Role");
+                    b.Navigation("BuyerType");
 
-                    b.Navigation("_BuyerType");
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Sprint16.Models.BuyerType", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Sprint16.Models.Customer", b =>

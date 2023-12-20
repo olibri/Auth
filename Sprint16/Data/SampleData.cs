@@ -53,8 +53,10 @@ namespace Sprint16.Data
 				new OrderDetails { OrderId = 2, ProductId = 3, Quantity = 4 },
 				new OrderDetails { OrderId = 3, ProductId = 2, Quantity = 1 }
 			};
+			
 			context.OrderDetails.AddRange(orderDetails);
 			context.SaveChanges();
+
 		}
 	}
 }

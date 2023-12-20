@@ -7,7 +7,6 @@ namespace Sprint16.Data
     {
         public ShoppingContext(DbContextOptions<ShoppingContext> options) : base(options)
         {
-
             //Database.EnsureDeleted();
             //Database.EnsureCreated();
         }
@@ -32,8 +31,6 @@ namespace Sprint16.Data
             modelBuilder.Entity<Role>().HasData(new Role[] {adminRole, userRole});
 
             base.OnModelCreating(modelBuilder);
-
-
         }
 
     }

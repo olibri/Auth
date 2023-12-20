@@ -34,7 +34,7 @@ namespace Sprint16
             });
             services.AddControllersWithViews();
             services.AddScoped<IDataService<Customer>, CustomerService>();
-            services.AddScoped<IUserService, UserService>();
+            //services.AddScoped<IUserService, UserService>();
            
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(option =>
